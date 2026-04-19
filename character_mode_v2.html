@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Character Mode — V2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=boska@400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{--text-xs:12px;--text-sm:14px;--text-base:16px;--text-lg:22px;--text-xl:32px;--space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--bg:#f5f1ec;--surface:#fcfbf8;--surface-2:#f1ece5;--border:#d7d0c8;--text:#241f1a;--muted:#6b6258;--faint:#9a9085;--primary:#1c7c86;--primary-2:#6d43d8;--card:#fffdfa;--shadow:0 16px 50px rgba(34,22,12,.1);--radius:22px;--radius-sm:14px;--font-body:'Satoshi',sans-serif;--font-display:'Boska',serif}
+    [data-theme="dark"]{--bg:#0f0d14;--surface:#17141f;--surface-2:#221d2c;--border:#352f43;--text:#f5eefc;--muted:#c0b3d2;--faint:#8e809f;--primary:#8fe1e9;--primary-2:#d6a1ff;--card:#1a1623;--shadow:0 24px 70px rgba(0,0,0,.38)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:var(--font-body);background:radial-gradient(circle at top right, rgba(214,161,255,.18), transparent 20%),radial-gradient(circle at top left, rgba(143,225,233,.12), transparent 24%),var(--bg);color:var(--text)}
+    button,input,textarea,select{font:inherit} button{cursor:pointer} .shell{max-width:1380px;margin:0 auto;padding:20px}
+    .top{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:6px 0 22px}.brand{display:flex;align-items:center;gap:14px}.mark{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:grid;place-items:center;box-shadow:var(--shadow)}
+    .mark span{font-size:22px}.brand h1{font-family:var(--font-display);font-size:var(--text-xl);margin:0}.brand p{margin:2px 0 0;color:var(--muted);font-size:var(--text-sm)}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}.pill{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:12px 16px;min-height:44px}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));border:1px solid var(--border);border-radius:30px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+    .hero-main{padding:34px;position:relative;overflow:hidden}.hero-main h2{font-family:var(--font-display);font-size:clamp(42px,6vw,76px);line-height:.93;max-width:10ch;margin:16px 0 0}.eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(143,225,233,.12);color:var(--primary);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+    .hero-main p{max-width:62ch;color:var(--muted);font-size:18px;margin-top:16px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.cta{background:var(--primary);color:#0d1215;border:none;border-radius:999px;padding:14px 20px;font-weight:700}.subcta{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:999px;padding:14px 20px;font-weight:700}
+    .prompt-box{margin-top:22px;padding:18px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid var(--border)} .tiny{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em}.small{font-size:14px}.muted{color:var(--muted)}
+    .aura{position:absolute;right:-40px;bottom:-40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle, rgba(214,161,255,.35), transparent 62%)}
+    .hero-side{padding:24px;display:grid;gap:14px}.stat{background:var(--surface-2);border:1px solid var(--border);padding:18px;border-radius:22px}.stat strong{display:block;font-size:24px;margin-top:8px}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:18px;margin-top:18px}.side,.main{display:grid;gap:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:26px;padding:22px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+    .card h3{margin:0 0 8px;font-size:var(--text-lg)} .character-list,.chips,.quote-list,.situation-grid,.playlist,.task-list,.chat-suggestions{display:grid;gap:12px}
+    .character{padding:16px;border-radius:18px;background:var(--surface-2);border:1px solid transparent;display:grid;gap:6px;text-align:left}.character.active{border-color:var(--accent);background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 16%, var(--surface-2)),var(--surface-2))}
+    .chips{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-top:16px}.chip{padding:11px 12px;border-radius:999px;background:color-mix(in oklab, var(--accent) 14%, var(--surface));color:var(--accent);font-size:12px;font-weight:700;text-align:center}
+    .quote-wall{display:grid;grid-template-columns:1fr 1fr;gap:16px}.quote-big{padding:22px;border-radius:24px;background:linear-gradient(180deg,color-mix(in oklab, var(--accent) 10%, var(--surface)),var(--surface));border:1px solid color-mix(in oklab, var(--accent) 22%, var(--border))}
+    .quote-big p{font-family:var(--font-display);font-size:38px;line-height:1.02;max-width:12ch;margin:0}.quote-list .quote-item,.situation-card,.song,.task,.suggestion{padding:16px;border-radius:18px;background:var(--surface-2);border:1px solid var(--border)}
+    .mode-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.situation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.situation-card h4{margin:0 0 8px;font-size:15px}.situation-card p{margin:0;color:var(--muted);font-size:14px}
+    .chatbox{display:grid;gap:14px}.chat-window{min-height:320px;display:grid;gap:12px;align-content:start}.bubble{padding:16px 18px;border-radius:22px;max-width:92%}.user{justify-self:end;background:var(--accent);color:#0d1014;border-bottom-right-radius:8px}.bot{background:var(--surface-2);border:1px solid var(--border);border-bottom-left-radius:8px}
+    .chat-controls{display:grid;grid-template-columns:1fr auto;gap:10px}.chat-controls input{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:14px 16px;color:var(--text)}
+    .send{background:var(--accent);color:#111;border:none;border-radius:16px;padding:14px 18px;font-weight:700}.playlist .song{display:flex;justify-content:space-between;align-items:center;gap:12px}.song button,.task button,.suggestion button{border:none;border-radius:999px;padding:10px 12px;background:color-mix(in oklab, var(--accent) 18%, var(--surface));color:var(--accent);font-weight:700}
+    .task{display:flex;justify-content:space-between;align-items:start;gap:10px}.task.done{background:color-mix(in oklab, var(--accent) 12%, var(--surface-2))}
+    .suggestion{display:flex;justify-content:space-between;align-items:center;gap:10px}.builder textarea,.builder input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:14px 16px;color:var(--text);margin-top:10px}
+    .builder button{margin-top:12px}.footer-note{padding:18px 4px 0;color:var(--faint);font-size:13px}
+    @media(max-width:1060px){.hero,.grid,.mode-layout,.quote-wall{grid-template-columns:1fr}.situation-grid{grid-template-columns:1fr 1fr}} @media(max-width:680px){.shell{padding:14px}.hero-main,.hero-side,.card{padding:18px}.top{flex-direction:column;align-items:flex-start}.hero-actions,.top-actions,.chat-controls{grid-template-columns:1fr;display:grid}.chat-controls{grid-template-columns:1fr}.situation-grid{grid-template-columns:1fr}.quote-big p{font-size:30px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="top">
+      <div class="brand">
+        <div class="mark"><span>✦</span></div>
+        <div>
+          <h1>Character Mode</h1>
+          <p>website v2 — immersive personality activation for low-energy brains</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="pill" id="randomPick">Random trigger</button>
+        <button class="pill" id="switchTheme">Light mode</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="panel hero-main">
+        <span class="eyebrow">enter character fast</span>
+        <h2 id="heroTitle">Become the version of you that already knows what to do.</h2>
+        <p id="heroText">This is not a productivity app first. It is a trigger system — one line, one look, one song, one move, and suddenly the right persona is driving.</p>
+        <div class="hero-actions">
+          <button class="cta" id="activateBtn">Activate mode</button>
+          <button class="subcta" id="shuffleSituation">New trigger line</button>
+        </div>
+        <div class="prompt-box">
+          <div class="tiny">entry trigger</div>
+          <div id="entryTrigger">Fix your posture, pick one prop, and answer one thing like you are already iconic.</div>
+        </div>
+        <div class="aura"></div>
+      </div>
+      <div class="panel hero-side">
+        <div class="stat"><div class="tiny">current mode</div><strong id="modeName">Gina Linetti</strong><div class="small muted" id="modeArchetype">socially untouchable chaos confidence</div></div>
+        <div class="stat"><div class="tiny">switch ritual</div><strong id="ritualPreview">Lip gloss. Slow walk. Message like you mean it.</strong></div>
+        <div class="stat"><div class="tiny">what it fixes</div><strong id="fixesPreview">Overexplaining, shame spirals, apologetic texting.</strong></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="side">
+        <div class="card">
+          <h3>Character library</h3>
+          <div class="small muted">Tap a person. Borrow the parts. Make one believable move.</div>
+          <div class="character-list" id="characterList"></div>
+        </div>
+        <div class="card builder">
+          <h3>Build your own</h3>
+          <div class="small muted">Create a custom alter ego from traits, one quote vibe, and one scene energy.</div>
+          <input id="customName" placeholder="Mode name — e.g. Boardroom Baddie" />
+          <textarea id="customTraits" rows="5" placeholder="Traits, mood, signature line energy, and what situation this mode helps with"></textarea>
+          <button class="cta" id="saveCustom">Save custom mode</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="card">
+          <h3 id="scriptTitle">Mode script</h3>
+          <div class="quote-wall">
+            <div class="quote-big"><p id="quoteBig">Act like the room is lucky you showed up.</p></div>
+            <div>
+              <div class="chips" id="chips"></div>
+              <div class="quote-list" id="quoteList" style="margin-top:16px"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mode-layout">
+          <div class="card">
+            <h3>Situation triggers</h3>
+            <div class="small muted">Search-net energy by category — what they would say in that exact moment.</div>
+            <div class="situation-grid" id="situationGrid" style="margin-top:16px"></div>
+          </div>
+          <div class="card">
+            <h3>What would they do?</h3>
+            <div class="small muted">A character coach, not generic advice.</div>
+            <div class="chatbox" style="margin-top:16px">
+              <div class="chat-suggestions" id="chatSuggestions"></div>
+              <div class="chat-window" id="chatWindow">
+                <div class="bubble bot" id="botStarter">Tell me the situation and I’ll answer in this character’s voice, then turn it into one tiny move you can do in 5 minutes.</div>
+              </div>
+              <div class="chat-controls">
+                <input id="chatInput" placeholder="e.g. I need to send a scary email and I keep avoiding it" />
+                <button class="send" id="sendBtn">Ask</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mode-layout">
+          <div class="card">
+            <h3>Soundtrack cues</h3>
+            <div class="small muted">Not endless scrolling. One cue song to snap into role.</div>
+            <div class="playlist" id="playlist" style="margin-top:16px"></div>
+          </div>
+          <div class="card">
+            <h3>Momentum tasks</h3>
+            <div class="small muted">Low-friction tasks written for the character, not the guilt spiral.</div>
+            <div class="task-list" id="taskList" style="margin-top:16px"></div>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <div class="footer-note">This website is a self-coaching concept for role-based activation and mood shifting. It is not diagnosis or therapy.</div>
+  </div>
+
+<script>
+const modes = [
+  {
+    name:'Gina Linetti',accent:'#ff8bd6',archetype:'socially untouchable chaos confidence',
+    heroTitle:'Become the version of you that treats hesitation like bad lighting.',
+    heroText:'Gina mode is for shame spirals, awkward social energy, apologetic texting, and those days when you need to become iconic before you feel stable.',
+    entry:'Fix your posture, pick one shiny prop, and act like everyone else is catching up to your brand.',
+    ritual:'Lip gloss. Slow walk. Message like you mean it.', fixes:'Overexplaining, shame spirals, apologetic texting.',
+    quoteBig:'Act like the room is lucky you showed up.',
+    scriptTitle:'Gina script',
+    chips:['main-character arrogance','dry one-liners','no overexplaining','funny before anxious'],
+    quoteWall:[
+      'You are not too much. They are under-seasoned.',
+      'Do not shrink the sentence. Drop it and let it sit.',
+      'If you feel awkward, pretend you are being documented.'
+    ],
+    situations:{
+      texting:'Reply shorter. Let them feel the pause.',
+      work:'Send the email like you have three better things to do.',
+      flirting:'Be amused first, impressed later.',
+      low_mood:'Treat today like costume rehearsal, not your final form.',
+      boundaries:'No essays. One sentence with a full stop.',
+      social:'Enter slower than your anxiety wants.'
+    },
+    suggestions:['What if I feel ugly today','How would Gina send a risky text','What would Gina do before a party'],
+    songs:['Alien-superstar switch','Glossy baddie strut','Cold-pop confidence cue'],
+    tasks:['Send one clean sentence without apologising','Get dressed before opening Instagram','Answer one message with confidence, not cushioning']
+  },
+  {
+    name:'Jake Peralta',accent:'#7fd0ff',archetype:'playful underdog momentum',
+    heroTitle:'Turn dread into a case and your brain might finally cooperate.',
+    heroText:'Jake mode is for avoidance, boring admin, task paralysis, and needing fun fast enough to outrun your resistance.',
+    entry:'Call it a mission, set a timer, and start embarrassingly small before your brain votes no.',
+    ritual:'Timer on. Hoodie on. Start with the dumb easy version.', fixes:'Task paralysis, dread, boring admin.',
+    quoteBig:'Make it a game and suddenly your brain wants in.', scriptTitle:'Jake script',
+    chips:['gamified focus','fast action','goofy courage','move before mood'],
+    quoteWall:['You do not need discipline first. You need a plot.','Start messy. Improve in motion.','If it is boring, add a countdown and a soundtrack.'],
+    situations:{texting:'Send the draft now. You can be charming on revision.',work:'Open the file and solve one clue, not the whole case.',flirting:'Be a little funny before you try to be impressive.',low_mood:'Today only needs one win montage.',boundaries:'Joke less, sentence clearer.',social:'Bring momentum, not perfection.'},
+    suggestions:['How would Jake start a boring report','What would Jake do if he missed a deadline','How would Jake stop doomscrolling'],
+    songs:['Action-comedy opener','Victory lap drums','Detective montage cue'],
+    tasks:['Do the first ugly draft in 12 minutes','Clear one visible surface','Reply to one pending thing before checking reels']
+  },
+  {
+    name:'Maddy Perez',accent:'#d7a1ff',archetype:'polished intimidation and visual control',
+    heroTitle:'Choose composure before the emotion catches up.',
+    heroText:'Maddy mode is for wanting high standards, better boundaries, polished replies, and the feeling that your outside should lead your inside for a while.',
+    entry:'Do one mirror check, fix one detail, and say less than you want to.',
+    ritual:'Lip combo. Clean lines. Fewer words.', fixes:'messy emotional texting, low self-image, chaos energy.',
+    quoteBig:'Do less explaining. More deciding.', scriptTitle:'Maddy script',
+    chips:['pretty control','high standards','edited emotion','baddie restraint'],
+    quoteWall:['Composure is a costume you can put on before the mood arrives.','If it feels desperate, do not send it.','Make the room match the version of you you are becoming.'],
+    situations:{texting:'Delete two thirds of the message.',work:'Polish the first impression before the deep explanation.',flirting:'Let the look do some of the work.',low_mood:'Get ready before you decide how you feel.',boundaries:'No is cleaner when it is shorter.',social:'Walk in like you already know your angles.'},
+    suggestions:['What would Maddy wear for a bad day','How would Maddy reply to a dry texter','What would Maddy do before seeing an ex'],
+    songs:['Velvet strut cue','Glassy glamour pulse','Night-out confidence beat'],
+    tasks:['Make one reply shorter and sharper','Get camera-ready before you spiral','Tidy one beauty surface or bag']
+  },
+  {
+    name:'Harvey Specter',accent:'#f6bf73',archetype:'ruthless competence and strategic calm',
+    heroTitle:'Act like you already know the leverage point.',
+    heroText:'Harvey mode is for work pressure, hard conversations, negotiation, and when insecurity is making you act smaller than your actual capacity.',
+    entry:'Sit up, lower your voice, and decide the outcome before you touch the task.',
+    ritual:'Water. Jacket posture. Outcome first.', fixes:'work nerves, indecision, weak positioning.',
+    quoteBig:'I do not have dreams. I have goals.', scriptTitle:'Harvey script',
+    chips:['executive certainty','strategy first','sharp wording','win-big energy'],
+    quoteWall:['It is not bragging if it is true.','Do not play the odds. Play the person.','Winners do not make excuses when the other side plays the game.'],
+    situations:{texting:'State the ask, remove the wobble, send it once.',work:'Decide the outcome first, then write toward it.',flirting:'Confidence is pace, not volume.',low_mood:'You do not need motivation to act professionally.',boundaries:'Say what is acceptable, not what hurt.',social:'Own the room by listening like you are evaluating it.'},
+    suggestions:['How would Harvey ask for a raise','What would Harvey do before a tough meeting','How would Harvey send a follow-up'],
+    songs:['Sleek boardroom pulse','Luxury threat bassline','Late-night power walk'],
+    tasks:['Send the direct version of the email','Prepare the first line for the meeting','Write the outcome you want in one sentence']
+  },
+  {
+    name:'Fleabag',accent:'#ff9f8f',archetype:'messy honesty with dark humour',
+    heroTitle:'Tell the truth without making it your whole identity.',
+    heroText:'Fleabag mode is for emotional spirals, shame, heartbreak, self-awareness overload, and situations where honesty might be the cleanest way through.',
+    entry:'Name the feeling once, make one joke in your head, and do one unromantic useful thing.',
+    ritual:'Face it. Laugh once. Feed yourself.', fixes:'shame loops, emotional confusion, over-romanticising pain.',
+    quoteBig:'You can be honest without auditioning your damage.', scriptTitle:'Fleabag script',
+    chips:['messy honesty','sad-girl humour','truth over performance','human first'],
+    quoteWall:['Loving badly is still loving, but it does not excuse the mess.','Say the true thing once and stop narrating yourself to death.','Pain is not your only interesting quality.'],
+    situations:{texting:'Send the honest line, not the theatrical one.',work:'Do not turn panic into personality. Make tea and begin.',flirting:'If you want them, want them honestly, not performatively.',low_mood:'Eat something before you decide life is meaningless.',boundaries:'Say the wound without turning it into a monologue.',social:'You do not have to be sparkling to be worth being around.'},
+    suggestions:['What would Fleabag do after embarrassment','How would Fleabag handle loneliness','What would Fleabag say if I want to text him'],
+    songs:['Soft-chaotic confessional','Bittersweet walk-home cue','Funny-sad indie pulse'],
+    tasks:['Eat something and drink water first','Say the actual issue in one sentence in notes','Do one useful boring thing without turning it into a story']
+  },
+  {
+    name:'Olivia Pope',accent:'#ffd9f2',archetype:'crisis-command elegance',
+    heroTitle:'Handle it before it handles you.',
+    heroText:'Olivia mode is for overwhelm, image control, emotional mess at work, and needing clean high-functioning energy.',
+    entry:'Stand tall, gather the facts, and move like a person who solves disasters before lunch.',
+    ritual:'Structured outfit. Clear desk. Controlled tone.', fixes:'overwhelm, panic, public-facing nerves.',
+    quoteBig:'You do not get to fall apart before the brief is done.', scriptTitle:'Olivia script',
+    chips:['crisis management','elegant control','high stakes calm','clean command'],
+    quoteWall:['Handle it is not cold. It is survival.','When it is messy, become clearer than everyone else.','Stability can be styled into existence for an hour.'],
+    situations:{texting:'Send the necessary version, not the needy version.',work:'Get the facts, sequence the moves, reduce the drama.',flirting:'Desire is fine. Sloppiness is optional.',low_mood:'You can cry after the calendar invite is sent.',boundaries:'Protect the role before you explain the feeling.',social:'Appear composed and let the rest catch up privately.'},
+    suggestions:['How would Olivia manage a bad work day','What would Olivia do if someone disrespected her','How would Olivia enter an event alone'],
+    songs:['Power heels soundtrack','Elegant crisis strings','Champagne control cue'],
+    tasks:['Clean your desktop or table','List facts before feelings','Send one calm professional message']
+  },
+  {
+    name:'Villanelle',accent:'#a5ffaf',archetype:'dangerous playfulness and bold nerve',
+    heroTitle:'Be a little more entertained by fear than ruled by it.',
+    heroText:'Villanelle mode is for stage fright, inhibition, social fear, and moments where you need nerve more than niceness.',
+    entry:'Smile a little, make fear feel ridiculous, and do the move before politeness drags you back.',
+    ritual:'Statement piece. Raised chin. Mischief first.', fixes:'social inhibition, timidity, fear of being perceived.',
+    quoteBig:'If you are scared, at least be interesting.', scriptTitle:'Villanelle script',
+    chips:['playful nerve','fearlessness','strange glamour','audacity'],
+    quoteWall:['Boredom is a worse enemy than embarrassment.','Charm can be a weapon when used lightly.','If you want to be remembered, stop entering timidly.'],
+    situations:{texting:'Say the intriguing thing, not the safest thing.',work:'Take the room with one strong sentence early.',flirting:'Interest is more magnetic than trying to be liked.',low_mood:'Wear something absurdly confident and let that start it.',boundaries:'Smile, then say no.',social:'Be curious instead of self-conscious.'},
+    suggestions:['What would Villanelle do before a room full of strangers','How would Villanelle flirt first','What if I am scared to speak up'],
+    songs:['Runway danger synth','Mischief bass cue','Elegant menace beat'],
+    tasks:['Wear one bold item','Speak once early in the room','Send one message without overediting']
+  },
+  {
+    name:'Elle Woods',accent:'#ff77aa',archetype:'sunny competence and underestimated brilliance',
+    heroTitle:'Be adorable and devastatingly prepared.',
+    heroText:'Elle mode is for imposter syndrome, self-doubt, studying, interviews, and proving that softness does not cancel seriousness.',
+    entry:'Add one bright detail, smile on purpose, and prepare harder than anyone expects.',
+    ritual:'Glossy energy. Organized notes. Sweet tone, sharp brain.', fixes:'imposter syndrome, study dread, interview nerves.',
+    quoteBig:'Soft does not mean small.', scriptTitle:'Elle script',
+    chips:['pink competence','underdog brilliance','sunny discipline','kind but sharp'],
+    quoteWall:['Let them underestimate you while you get ready.','Charm and preparation are not opposites.','You are allowed to be warm and still be excellent.'],
+    situations:{texting:'Be clear and warm, not vague and eager.',work:'Prep more than the room expects, then smile.',flirting:'Confidence can be bright, not icy.',low_mood:'Get cute, get organised, get one win.',boundaries:'Kind is not the same as available.',social:'Bring friendliness without asking for permission.'},
+    suggestions:['How would Elle prep for an interview','What would Elle do if she feels dumb','How would Elle recover after being underestimated'],
+    songs:['Pink power opener','Sunny confidence pop','Study montage sparkle'],
+    tasks:['Lay out notes or outfit first','Review one important thing for 10 minutes','Send one warm but clear message']
+  }
+];
+
+let modeIndex = 0;
+let themeDark = true;
+const charList = document.getElementById('characterList');
+const chips = document.getElementById('chips');
+const quoteList = document.getElementById('quoteList');
+const situationGrid = document.getElementById('situationGrid');
+const playlist = document.getElementById('playlist');
+const taskList = document.getElementById('taskList');
+const chatSuggestions = document.getElementById('chatSuggestions');
+const chatWindow = document.getElementById('chatWindow');
+
+function getMode(){ return modes[modeIndex]; }
+
+function titleCase(k){return k.replace('_',' ').replace(/\b\w/g,m=>m.toUpperCase())}
+
+function renderCharacters(){
+  charList.innerHTML='';
+  modes.forEach((m,i)=>{
+    const b=document.createElement('button');
+    b.className='character'+(i===modeIndex?' active':'');
+    b.style.setProperty('--accent',m.accent);
+    b.innerHTML=`<strong>${m.name}</strong><div class="small muted">${m.archetype}</div><div class="tiny">tap to enter this mode</div>`;
+    b.onclick=()=>{modeIndex=i; renderAll();};
+    charList.appendChild(b);
+  });
+}
+
+function renderAll(){
+  const m=getMode();
+  document.documentElement.style.setProperty('--accent',m.accent);
+  document.getElementById('heroTitle').textContent=m.heroTitle;
+  document.getElementById('heroText').textContent=m.heroText;
+  document.getElementById('entryTrigger').textContent=m.entry;
+  document.getElementById('modeName').textContent=m.name;
+  document.getElementById('modeArchetype').textContent=m.archetype;
+  document.getElementById('ritualPreview').textContent=m.ritual;
+  document.getElementById('fixesPreview').textContent=m.fixes;
+  document.getElementById('quoteBig').textContent=m.quoteBig;
+  document.getElementById('scriptTitle').textContent=m.scriptTitle;
+  chips.innerHTML=m.chips.map(c=>`<div class="chip" style="--accent:${m.accent}">${c}</div>`).join('');
+  quoteList.innerHTML=m.quoteWall.map(q=>`<div class="quote-item">${q}</div>`).join('');
+  situationGrid.innerHTML=Object.entries(m.situations).map(([k,v])=>`<div class="situation-card"><div class="tiny">${titleCase(k)}</div><h4>What they would say</h4><p>${v}</p></div>`).join('');
+  playlist.innerHTML=m.songs.map(s=>`<div class="song"><div><strong>${s}</strong><div class="tiny">one cue, not a rabbit hole</div></div><button>play cue</button></div>`).join('');
+  taskList.innerHTML=m.tasks.map((t,i)=>`<div class="task ${i===0?'done':''}"><div><strong>${t}</strong><div class="tiny">small enough to start fast</div></div><button>${i===0?'started':'do now'}</button></div>`).join('');
+  chatSuggestions.innerHTML=m.suggestions.map(s=>`<div class="suggestion"><span>${s}</span><button onclick="prefill(${JSON.stringify(s)})">use</button></div>`).join('');
+  document.getElementById('botStarter').textContent=`Tell me the situation and I will answer like ${m.name}, then turn it into one tiny action.`;
+  renderCharacters();
+}
+
+function prefill(text){document.getElementById('chatInput').value=text;document.getElementById('chatInput').focus()}
+window.prefill=prefill;
+
+function coachReply(input){
+  const m=getMode();
+  const lower=input.toLowerCase();
+  let bucket='work';
+  if(/text|reply|message|him|her|ex|dm/.test(lower)) bucket='texting';
+  else if(/party|people|social|room|friends|meet/.test(lower)) bucket='social';
+  else if(/date|flirt|crush/.test(lower)) bucket='flirting';
+  else if(/sad|low|cry|depress|empty|fog/.test(lower)) bucket='low_mood';
+  else if(/boundary|boundaries|no|disrespect/.test(lower)) bucket='boundaries';
+  const line=m.situations[bucket];
+  const tiny=m.tasks[Math.floor(Math.random()*m.tasks.length)];
+  const structure = `<strong>Their read:</strong> ${line}<br><br><strong>Their move:</strong> ${m.name} would stop waiting to feel ready and choose the cleanest next step.<br><br><strong>Your tiny version:</strong> ${tiny}. Do it in the next five minutes, not later.`;
+  return structure;
+}
+
+function sendChat(){
+  const input=document.getElementById('chatInput');
+  const value=input.value.trim();
+  if(!value) return;
+  const user=document.createElement('div'); user.className='bubble user'; user.textContent=value;
+  const bot=document.createElement('div'); bot.className='bubble bot'; bot.innerHTML=coachReply(value);
+  chatWindow.appendChild(user); chatWindow.appendChild(bot); chatWindow.scrollTop=chatWindow.scrollHeight; input.value='';
+}
+
+document.getElementById('sendBtn').onclick=sendChat;
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter') sendChat()});
+document.getElementById('randomPick').onclick=()=>{modeIndex=Math.floor(Math.random()*modes.length);renderAll()};
+document.getElementById('activateBtn').onclick=()=>{document.getElementById('entryTrigger').textContent=`${getMode().name} activated. Pick one visible task and do it before your mood starts negotiating.`};
+document.getElementById('shuffleSituation').onclick=()=>{const vals=Object.values(getMode().situations);document.getElementById('entryTrigger').textContent=vals[Math.floor(Math.random()*vals.length)]};
+document.getElementById('switchTheme').onclick=()=>{themeDark=!themeDark;document.documentElement.setAttribute('data-theme',themeDark?'dark':'light');document.getElementById('switchTheme').textContent=themeDark?'Light mode':'Dark mode'};
+document.getElementById('saveCustom').onclick=()=>{
+  const name=document.getElementById('customName').value.trim();
+  const traits=document.getElementById('customTraits').value.trim();
+  if(!name || !traits) return;
+  modes.push({name,accent:'#9ce7b0',archetype:'custom self-authored mode',heroTitle:`Try on ${name} now.`,heroText:traits,entry:'Pick one prop, one line, and one immediate task.',ritual:'Cue song. Better posture. Begin visible.',fixes:'custom situations you keep coming back to.',quoteBig:'You can prototype a self before you fully believe in it.',scriptTitle:`${name} script`,chips:['custom mode','written by you','still counts','identity draft'],quoteWall:['Act first, belief can catch up later.','Borrow the vibe until the habit becomes yours.','One believable move is enough to begin.'],situations:{texting:'Say the clean thing, not the spiralling thing.',work:'Shrink the task and start visibly.',flirting:'Lead with energy, not overanalysis.',low_mood:'Do one body-level reset before any conclusion.',boundaries:'Shorter is stronger.',social:'Arrive as if you belong because you do.'},suggestions:['How would this mode handle my day','What would this version of me wear','How should this mode reply'],songs:['Your own switch cue','One cinematic opener','One no-skip trigger'],tasks:['Start with one visible task','Change one external detail','Do one action before thinking more']});
+  modeIndex=modes.length-1; renderAll(); document.getElementById('customName').value=''; document.getElementById('customTraits').value='';
+};
+renderAll();
+</script>
+</body>
+</html>
